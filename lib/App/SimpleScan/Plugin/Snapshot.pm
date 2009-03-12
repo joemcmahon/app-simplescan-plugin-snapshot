@@ -1,6 +1,6 @@
 package App::SimpleScan::Plugin::Snapshot;
 
-our $VERSION = '0.10';
+our $VERSION = '1.00';
 
 use warnings;
 use strict;
@@ -94,22 +94,30 @@ sub filter {
   my $snap_kind = $self->snapshot;
   return @code unless defined $snap_kind;
 
+  my $snapshot_comment;
   my $testspec  = $self->get_current_spec;
 
-  my $comment   = $testspec -> comment;
-  my $url       = $testspec -> uri;
-  my $regex     = $testspec -> regex;
-  my $test_kind = $testspec -> kind;
+  if (defined $testspec) {
+    my $comment   = $testspec -> comment;
+    my $url       = $testspec -> uri;
+    my $regex     = $testspec -> regex;
+    my $test_kind = $testspec -> kind;
+    $snapshot_comment =  qq($comment<br>$url<br>$regex $test_kind);
+  }
+  else {
+    my $line = $self->current_line();
+    $snapshot_comment = qq(Generated code for $line);
+  }
 
   if ($snap_kind eq 'on') {
     push @code, <<EOS;
-diag "See snapshot " . mech->snapshot( qq($comment<br>$url<br>$regex $test_kind) );
+diag "See snapshot " . mech->snapshot( qq($snapshot_comment) );
 EOS
   }
   elsif ($snap_kind eq 'error') {
   push @code, <<EOS;
 if (!last_test->{ok}) {
-  diag "See snapshot " . mech->snapshot( qq($comment<br>$url<br>$regex $test_kind) );
+  diag "See snapshot " . mech->snapshot( qq($snapshot_comment) );
 }
 EOS
   }

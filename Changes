@@ -1,5 +1,8 @@
 Revision history for App-SimpleScan-Plugin-Snapshot
 
+1.02  Mon Apr 10 10:01:24 PDT 2006
+	- failed upload; trying again
+
 1.01  Tue Mar 21 16:15:49 PST 2006
 	- added changelog entry for 1.00
 	- added support for snap_layout pragma and 

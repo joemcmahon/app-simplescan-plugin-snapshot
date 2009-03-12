@@ -1,19 +1,13 @@
-App-SimpleScan-Plugin-Snapshot version 0.0.1
+App-SimpleScan-Plugin-Snapshot version 0.02
 
-[ REPLACE THIS...
+Provides a snapshot feature for simple_scan.
 
-  The README is used to introduce the module and provide instructions on
-  how to install the module, any machine dependencies it may have (for
-  example C compilers and installed libraries) and any other information
-  that should be understood before the module is installed.
-
-  A README file is required for CPAN modules since CPAN extracts the
-  README file from a module distribution so that people browsing the
-  archive can use it get an idea of the modules uses. It is usually a
-  good idea to provide version information here so that people can
-  decide whether fixes for the module are worth downloading.
-]
-
+Snapshots are HTML framesets containing readable
+debugging information from the WWW::Mechanize object:
+ - the request
+ - the response
+ - the cookie jar
+ - the actual page content
 
 INSTALLATION
 
@@ -28,7 +22,7 @@ To install this module, run the following commands:
 
 DEPENDENCIES
 
-None.
+App::SimpleScan, WWW::Mechanize::Pluggable, WWW::Mechanize::Plugin::Snapshot.
 
 
 COPYRIGHT AND LICENCE

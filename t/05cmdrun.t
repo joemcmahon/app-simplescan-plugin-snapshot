@@ -24,6 +24,11 @@ No TMPDIR/TEMP defined on this system!
 EOS
 );
 
+if (defined($ENV{TMP}||$ENV{TMPDIR})) {
+  $test_pairs{'--snap_dir /nonexistent'} =~ 
+    s|No TMPDIR/TEMP defined on this system!\n\n||g;
+}
+
 plan tests=>(int keys %test_pairs) + 6;
 
 for my $test_input (keys %test_pairs) {

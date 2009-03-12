@@ -17,9 +17,9 @@ my %test_pairs = (
 ok 1 - branding [http://perl.org/] [/Perl/ should match]
 not ok 2 - branding [http://python.org/] [/Perl/ should match] # TODO Doesn't match now but should later
 #   Failed (TODO) test 'branding [http://python.org/] [/Perl/ should match]'
-#   in /home/y/lib/perl5/site_perl/5.6.1/Test/WWW/Simple.pm at line 52.
+#   in ... at line XX.
 #          got: "<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Trans"...
-#       length: 11445
+#       length: ...
 #     doesn't match '(?-xism:Perl)'
 EOS
   "snaperrorrun.in" => <<EOS,
@@ -27,9 +27,9 @@ EOS
 ok 1 - branding [http://perl.org/] [/Perl/ should match]
 not ok 2 - branding [http://python.org/] [/Perl/ should match]
 #   Failed test 'branding [http://python.org/] [/Perl/ should match]'
-#   in /home/y/lib/perl5/site_perl/5.6.1/Test/WWW/Simple.pm at line 52.
+#   in ... at line XX.
 #          got: "<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Trans"...
-#       length: 11445
+#       length: ...
 #     doesn't match '(?-xism:Perl)'
 # Looks like you failed 1 test of 2.
 EOS
@@ -40,7 +40,12 @@ plan tests=>(int keys %test_pairs)+(3*int keys %counts);
 for my $test_input (keys %test_pairs) {
   my $cmd = qq(perl -Iblib/lib $simple_scan 2>&1 <t/$test_input);
   my $results = `$cmd`;
+
   $results =~ s/\n\n/\n/g;
+  $results =~ s|in .*? at line|in ... at line|;
+  $results =~ s|in ... at line \d+|in ... at line XX|;
+  $results =~ s|length: \d+|length: ...|;
+
   eq_or_diff $results, $test_pairs{$test_input}, "expected output";
   for my $which (qw(debug frame content)) {
     my @files = glob("t/$which*.html");

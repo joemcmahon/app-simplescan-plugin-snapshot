@@ -13,8 +13,8 @@ use strict;
 my \@accent;
 page_like "http://perl.org/",
           qr/Perl/,
-          "branding [http://perl.org/] [/Perl/ should match]";
-diag "See snapshot " . mech->snapshot;
+          qq(branding [http://perl.org/] [/Perl/ should match]);
+diag "See snapshot " . mech->snapshot( qq(branding<br>http://perl.org/<br>Perl Y) );
 
 EOS
   "snaperror.in" => <<EOS,
@@ -25,9 +25,9 @@ use strict;
 my \@accent;
 page_like "http://perl.org/",
           qr/Perl/,
-          "branding [http://perl.org/] [/Perl/ should match]";
+          qq(branding [http://perl.org/] [/Perl/ should match]);
 if (!last_test->{ok}) {
-  diag "See snapshot " . mech->snapshot;
+  diag "See snapshot " . mech->snapshot( qq(branding<br>http://perl.org/<br>Perl Y) );
 }
 
 EOS

@@ -1,5 +1,10 @@
 Revision history for App-SimpleScan-Plugin-Snapshot
 
+0.07  Tue Dec 20 17:36:36 PST 2005
+	- Added comment tesxt from the testspec to the
+	  snapshot comment area
+	- switched to qq() for string quoting
+
 0.06  Fri Dec  2 16:59:13 PST 2005
 	- changes to support new file versioning
 	  fixes in WW::Mechanize::Plugin::Snapshot

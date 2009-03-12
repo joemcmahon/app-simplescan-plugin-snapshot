@@ -14,7 +14,7 @@ my \@accent;
 mech->snapshots_to("/tmp");
 page_like "http://perl.org/",
           qr/Perl/,
-          "branding [http://perl.org/] [/Perl/ should match]";
+          qq(branding [http://perl.org/] [/Perl/ should match]);
 
 EOS
   "--snap_dir /nonexistent" => <<EOS,
@@ -26,7 +26,7 @@ my \@accent;
 mech->snapshots_to("/nonexistent");
 page_like "http://perl.org/",
           qr/Perl/,
-          "branding [http://perl.org/] [/Perl/ should match]";
+          qq(branding [http://perl.org/] [/Perl/ should match]);
 
 EOS
 );

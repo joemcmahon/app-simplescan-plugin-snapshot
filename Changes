@@ -1,5 +1,9 @@
 Revision history for App-SimpleScan-Plugin-Snapshot
 
+0.09  Tue Feb 28 14:59:50 PST 2006
+	- per_test stuff redone again; remove per_test
+	- add stack_test override 
+
 0.08  Tue Feb  7 15:18:58 PST 2006
 	- conform to new per_test interface
 

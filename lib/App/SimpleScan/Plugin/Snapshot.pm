@@ -1,6 +1,6 @@
 package App::SimpleScan::Plugin::Snapshot;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use warnings;
 use strict;
@@ -14,6 +14,11 @@ sub import {
   *{caller() . '::snapshot'}     = \&snapshot;
   *{caller() . '::snapshots_to'} = \&snapshots_to;
   *{caller() . '::snap_prefix'}  = \&snap_prefix;
+  {
+    no warnings 'redefine';
+    *old_stack_test = eval("\\&".caller()."::stack_test");
+    *{caller() . '::stack_test'}   = \&stack_test;
+  }
 }
 
 sub snapshot {
@@ -81,23 +86,30 @@ sub snap_prefix_pragma {
   $self->stack_code(qq(mech->snap_prefix("$args");\n));
 }
 
-sub per_test {
-  my($class, $testspec) = @_;
-  my $snap_kind = $testspec->app->snapshot;
-  return 0,"" unless defined $snap_kind;
+# This overrides the stack_test that App::SimpleScan provides.
+# We always call the original one when we're done, so even if
+# another plugin does this too, we eventually get to the 
+# original method.
+sub stack_test {
+  old_stack_test(@_);
 
+  my($self, @code) = @_;
+  my $snap_kind = $self->snapshot;
+  return unless defined $snap_kind;
+
+  my $testspec = $self->get_current_spec();
   my $comment = $testspec->comment;
   my $url = $testspec->uri;
   my $regex = $testspec->regex;
   my $test_kind = $testspec->kind;
 
   if ($snap_kind eq 'on') {
-    return 0, <<EOS;
+    $self->stack_code(<<EOS);
 diag "See snapshot " . mech->snapshot( qq($comment<br>$url<br>$regex $test_kind) );
 EOS
   }
   elsif ($snap_kind eq 'error') {
-    return 0, <<EOS;
+  $self->stack_code(<<EOS);
 if (!last_test->{ok}) {
   diag "See snapshot " . mech->snapshot( qq($comment<br>$url<br>$regex $test_kind) );
 }
@@ -178,9 +190,10 @@ you can link to snapshots from a report.
 Standard C<App::SimpleScan> callback: validates the command-line
 arguments, calling the appropriate pragma methods as necessary.
 
-=head2 per_test
+=head2 stack_test
 
-Actually implements the snapshotting. Stacks code after every test
+Adds a hook to App::SimpleScan's C<stack_test> method that 
+implements the snapshotting. Stacks code after every test
 that either snapshots every transaction (snapshot 'on') or
 only after an error occurs (snapshot 'error').
 
@@ -194,18 +207,17 @@ only after an error occurs (snapshot 'error').
 
 =over
 
-=item C<< Error message here, perhaps with %s placeholders >>
+=item C<< Invalid snapshot type '%s'; 'error' assume >>
 
-[Description of error here]
+You supplied a snapshot type other than 'on' or 'error'.
+The plugin assumes 'error', but chides you about it. You'd
+be better off to pick either 'on' or 'error' instead.
 
-=item C<< Another error message here >>
+=item C<< See snapshot %s >>
 
-[Description of error here]
-
-[Et cetera, et cetera]
+A snapshot was taken and is located in the file shown.
 
 =back
-
 
 =head1 CONFIGURATION AND ENVIRONMENT
 

@@ -1,5 +1,10 @@
 Revision history for App-SimpleScan-Plugin-Snapshot
 
+0.10  Fri Mar 17 11:11:58 PST 2006
+	- Now uses new filter() interface instead of
+	  nastily overriding App::SimpleScan's
+	  stack_test()
+
 0.09  Tue Feb 28 14:59:50 PST 2006
 	- per_test stuff redone again; remove per_test
 	- add stack_test override 

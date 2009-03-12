@@ -1,6 +1,6 @@
 package App::SimpleScan::Plugin::Snapshot;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 use warnings;
 use strict;
@@ -14,11 +14,6 @@ sub import {
   *{caller() . '::snapshot'}     = \&snapshot;
   *{caller() . '::snapshots_to'} = \&snapshots_to;
   *{caller() . '::snap_prefix'}  = \&snap_prefix;
-  {
-    no warnings 'redefine';
-    *old_stack_test = eval("\\&".caller()."::stack_test");
-    *{caller() . '::stack_test'}   = \&stack_test;
-  }
 }
 
 sub snapshot {
@@ -86,35 +81,39 @@ sub snap_prefix_pragma {
   $self->stack_code(qq(mech->snap_prefix("$args");\n));
 }
 
+sub filters {
+  return \&filter;
+}
+
 # This overrides the stack_test that App::SimpleScan provides.
 # We always call the original one when we're done, so even if
 # another plugin does this too, we eventually get to the 
 # original method.
-sub stack_test {
-  old_stack_test(@_);
-
+sub filter {
   my($self, @code) = @_;
   my $snap_kind = $self->snapshot;
-  return unless defined $snap_kind;
+  return @code unless defined $snap_kind;
 
-  my $testspec = $self->get_current_spec();
-  my $comment = $testspec->comment;
-  my $url = $testspec->uri;
-  my $regex = $testspec->regex;
-  my $test_kind = $testspec->kind;
+  my $testspec  = $self->get_current_spec;
+
+  my $comment   = $testspec -> comment;
+  my $url       = $testspec -> uri;
+  my $regex     = $testspec -> regex;
+  my $test_kind = $testspec -> kind;
 
   if ($snap_kind eq 'on') {
-    $self->stack_code(<<EOS);
+    push @code, <<EOS;
 diag "See snapshot " . mech->snapshot( qq($comment<br>$url<br>$regex $test_kind) );
 EOS
   }
   elsif ($snap_kind eq 'error') {
-  $self->stack_code(<<EOS);
+  push @code, <<EOS;
 if (!last_test->{ok}) {
   diag "See snapshot " . mech->snapshot( qq($comment<br>$url<br>$regex $test_kind) );
 }
 EOS
   }
+  return @code;
 }
 
 1; # Magic true value required at end of module
@@ -190,10 +189,14 @@ you can link to snapshots from a report.
 Standard C<App::SimpleScan> callback: validates the command-line
 arguments, calling the appropriate pragma methods as necessary.
 
-=head2 stack_test
+=head2 filters
 
-Adds a hook to App::SimpleScan's C<stack_test> method that 
-implements the snapshotting. Stacks code after every test
+Standard C<App::SimpleScan> callback: returns the list of filters
+for code that will be stacked by stack_test().
+
+=head2 filter
+
+Implements the snapshotting. Add code after every test
 that either snapshots every transaction (snapshot 'on') or
 only after an error occurs (snapshot 'error').
 

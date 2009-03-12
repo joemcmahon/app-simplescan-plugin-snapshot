@@ -1,6 +1,23 @@
 Revision history for App-SimpleScan-Plugin-Snapshot
 
-0.02  Tue Nov 22 15:31:26 PST 200
+0.06  Fri Dec  2 16:59:13 PST 2005
+	- changes to support new file versioning
+	  fixes in WW::Mechanize::Plugin::Snapshot
+
+0.05  Fri Dec  2 11:00:50 PST 2005
+	- Tag snapshot diags to allow specialized
+	  test harnesses to spot them
+
+0.04  Thu Dec  1 11:36:22 PST 2005
+	- added --snap_prefix and %%snap_prefix support
+
+0.03  Wed Nov 30 14:53:34 PST 2005
+	- Removed double-checking of directory; let
+	  the plugin do it
+	- Updated tests to reflect new per-run-directory
+	  changes in WWW::Mechanize::Plugin::Snapshot
+
+0.02  Tue Nov 22 15:31:26 PST 2005
 	- fix README to contain actual information.
 	- fix tests to work properly without $ENV{TMP}
         - remove references to Yahoo!-local lib paths

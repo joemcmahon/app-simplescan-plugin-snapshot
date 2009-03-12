@@ -14,7 +14,7 @@ my \@accent;
 page_like "http://perl.org/",
           qr/Perl/,
           "branding [http://perl.org/] [/Perl/ should match]";
-mech->snapshot;
+diag "See snapshot " . mech->snapshot;
 
 EOS
   "snaperror.in" => <<EOS,
@@ -27,7 +27,7 @@ page_like "http://perl.org/",
           qr/Perl/,
           "branding [http://perl.org/] [/Perl/ should match]";
 if (!last_test->{ok}) {
-  mech->snapshot;
+  diag "See snapshot " . mech->snapshot;
 }
 
 EOS

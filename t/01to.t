@@ -6,12 +6,12 @@ chomp $simple_scan;
 
 my %test_pairs = (
   "%%snap_dir /nonexistent" => <<EOS,
-use Test::More tests=>1;
+use Test::More tests=>0;
 use Test::WWW::Simple;
 use strict;
 
 my \@accent;
-fail "/nonexistent is not a directory; no snapshots can be taken";
+mech->snapshots_to("/nonexistent");
 
 EOS
   "%%snap_dir ." => <<EOS,

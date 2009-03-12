@@ -18,12 +18,12 @@ page_like "http://perl.org/",
 
 EOS
   "--snap_dir /nonexistent" => <<EOS,
-use Test::More tests=>2;
+use Test::More tests=>1;
 use Test::WWW::Simple;
 use strict;
 
 my \@accent;
-fail "/nonexistent is not a directory; no snapshots can be taken";
+mech->snapshots_to("/nonexistent");
 page_like "http://perl.org/",
           qr/Perl/,
           "branding [http://perl.org/] [/Perl/ should match]";

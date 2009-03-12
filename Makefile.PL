@@ -12,7 +12,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More' => 0,
         'App::SimpleScan'    => 0.21,
-        'WWW::Mechanize::Plugin::Snapshot'    => 0,
+        'WWW::Mechanize::Plugin::Snapshot'    => 0.12,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'App-SimpleScan-Plugin-Snapshot-*' },

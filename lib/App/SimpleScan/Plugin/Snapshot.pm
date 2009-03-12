@@ -1,17 +1,19 @@
 package App::SimpleScan::Plugin::Snapshot;
 
-our $VERSION = '0.02';
+our $VERSION = '0.06';
 
 use warnings;
 use strict;
 use Carp;
+use File::Path;
 
-my($snapdir, $snapshot);
+my($snapdir, $snapshot, $snap_prefix);
 
 sub import {
   no strict 'refs';
   *{caller() . '::snapshot'}     = \&snapshot;
   *{caller() . '::snapshots_to'} = \&snapshots_to;
+  *{caller() . '::snap_prefix'}  = \&snap_prefix;
 }
 
 sub snapshot {
@@ -26,9 +28,16 @@ sub snapshots_to {
   $snapdir;
 }
 
+sub snap_prefix {
+  my($self, $value) = @_;
+  $snap_prefix = $value if defined $value;
+  $snap_prefix;
+}
+
 sub options {
-  return ('snap_dir=s'   => \$snapdir,
-          'snapshot=s' => \$snapshot);
+  return ('snap_dir=s'    => \$snapdir,
+          'snap_prefix=s' => \$snap_prefix,
+          'snapshot=s'    => \$snapshot);
 }
 
 sub validate_options {
@@ -36,27 +45,21 @@ sub validate_options {
   if (defined (my $dir = $app->snapshots_to)) {
     $app->pragma('snap_dir')->($app, $dir);
   } 
+  if (defined (my $prefix = $app->snap_prefix)) {
+    $app->pragma('snap_prefix')->($app, $prefix);
+  } 
 }
 
 sub pragmas {
-  return (['snap_dir' => \&snapshot_dir_pragma],
-          ['snapshot'     => \&snapshot_pragma],
+  return (['snap_dir'    => \&snapshot_dir_pragma],
+          ['snapshot'    => \&snapshot_pragma],
+          ['snap_prefix' => \&snap_prefix_pragma],
          );
 }
 
 sub snapshot_dir_pragma {
   my ($self, $args) = @_;
-  if (-d $args) {
-    if (-w $args) {
-      $self->stack_code(qq(mech->snapshots_to("$args");\n));
-    }
-    else {
-      $self->stack_test(qq(fail "Snapshot directory $args is not writable";\n));
-    }
-  }
-  else {
-    $self->stack_test(qq(fail "$args is not a directory; no snapshots can be taken";\n));
-  }
+  $self->stack_code(qq(mech->snapshots_to("$args");\n));
 }
 
 sub snapshot_pragma {
@@ -73,6 +76,11 @@ sub snapshot_pragma {
   }
 }
 
+sub snap_prefix_pragma {
+  my ($self, $args) = @_;
+  $self->stack_code(qq(mech->snap_prefix("$args");\n));
+}
+
 sub per_test {
   my($class, $testspec) = @_;
   my $kind = $testspec->app->snapshot;
@@ -85,13 +93,13 @@ sub _per_test_assist {
 
   if ($kind eq 'on') {
     return <<EOS;
-mech->snapshot;
+diag "See snapshot " . mech->snapshot;
 EOS
   }
   elsif ($kind eq 'error') {
     return <<EOS;
 if (!last_test->{ok}) {
-  mech->snapshot;
+  diag "See snapshot " . mech->snapshot;
 }
 EOS
   }
@@ -142,6 +150,11 @@ variable containing the current value for this combined option.
 Accessor allowing pragmas and command line options to share the
 variable containing the current value for this combined option.
 
+=head2 snap_prefix
+
+Accessor allowing pragmas and command line options to share the
+variable containing the current value for this combined option.
+
 =head2 snapshot_dir_pragma
 
 Actually implements the C<%%snapshot_dir> pragma, stacking the 
@@ -151,6 +164,14 @@ necessary code.
 
 Sets the current snapshotting: 'on' (snapshot everything), or
 'error' (only snapshot on errors).
+
+=head2 snap_prefix_pragma
+
+Set the current snapshot "prefix" - substituted for the 
+directory that the snapshots are stored in when the 
+snapshot frame file name is printed. This makes it possible
+to do things like transform a filename into a URL so that
+you can link to snapshots from a report.
 
 =head2 validate_options
 

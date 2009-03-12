@@ -1,5 +1,13 @@
 Revision history for App-SimpleScan-Plugin-Snapshot
 
+1.01  Tue Mar 21 16:15:49 PST 2006
+	- added changelog entry for 1.00
+	- added support for snap_layout pragma and 
+	  command-line option
+
+1.00  Mon Mar 20 13:22:08 PST 2006
+	- Verified OK with 1.00 interfaces
+
 0.10  Fri Mar 17 11:11:58 PST 2006
 	- Now uses new filter() interface instead of
 	  nastily overriding App::SimpleScan's

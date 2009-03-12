@@ -19,6 +19,24 @@ page_like "http://perl.org/",
 diag "See snapshot " . mech->snapshot( qq(branding<br>http://perl.org/<br>Perl Y) );
 
 EOS
+
+  "-snapshot error -snap_dir /tmp -snap_layout popup" => <<EOS,
+use Test::More tests=>1;
+use Test::WWW::Simple;
+use strict;
+
+my \@accent;
+mech->snapshots_to("/tmp");
+mech->snap_layout("popup");
+mech->agent_alias('Windows IE 6');
+page_like "http://perl.org/",
+          qr/Perl/,
+          qq(branding [http://perl.org/] [/Perl/ should match]);
+if (!last_test->{ok}) {
+  diag "See snapshot " . mech->snapshot( qq(branding<br>http://perl.org/<br>Perl Y) );
+}
+
+EOS
 );
 plan tests=>(int keys %test_pairs);
 

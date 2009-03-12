@@ -1,25 +1,32 @@
 package App::SimpleScan::Plugin::Snapshot;
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 use warnings;
 use strict;
 use Carp;
 use File::Path;
 
-my($snapdir, $snapshot, $snap_prefix);
+my($snapdir, $snapshot, $snap_prefix, $snap_layout);
 
 sub import {
   no strict 'refs';
   *{caller() . '::snapshot'}     = \&snapshot;
   *{caller() . '::snapshots_to'} = \&snapshots_to;
   *{caller() . '::snap_prefix'}  = \&snap_prefix;
+  *{caller() . '::snap_layout'}  = \&snap_layout;
 }
 
 sub snapshot {
   my($self, $value) = @_;
   $snapshot = $value if defined $value;
   $snapshot;
+}
+
+sub snap_layout {
+  my($self, $value) = @_;
+  $snap_layout = $value if defined $value;
+  $snap_layout;
 }
 
 sub snapshots_to {
@@ -37,7 +44,9 @@ sub snap_prefix {
 sub options {
   return ('snap_dir=s'    => \$snapdir,
           'snap_prefix=s' => \$snap_prefix,
-          'snapshot=s'    => \$snapshot);
+          'snapshot=s'    => \$snapshot,
+          'snap_layout=s' => \$snap_layout,
+  );
 }
 
 sub validate_options {
@@ -48,12 +57,16 @@ sub validate_options {
   if (defined (my $prefix = $app->snap_prefix)) {
     $app->pragma('snap_prefix')->($app, $prefix);
   } 
+  if (defined (my $layout = $app->snap_layout)) {
+    $app->pragma('snap_layout')->($app, $layout);
+  } 
 }
 
 sub pragmas {
   return (['snap_dir'    => \&snapshot_dir_pragma],
           ['snapshot'    => \&snapshot_pragma],
           ['snap_prefix' => \&snap_prefix_pragma],
+          ['snap_layout' => \&snap_layout_pragma],
          );
 }
 
@@ -81,14 +94,15 @@ sub snap_prefix_pragma {
   $self->stack_code(qq(mech->snap_prefix("$args");\n));
 }
 
+sub snap_layout_pragma {
+  my ($self, $args) = @_;
+  $self->stack_code(qq(mech->snap_layout("$args");\n));
+}
+
 sub filters {
   return \&filter;
 }
 
-# This overrides the stack_test that App::SimpleScan provides.
-# We always call the original one when we're done, so even if
-# another plugin does this too, we eventually get to the 
-# original method.
 sub filter {
   my($self, @code) = @_;
   my $snap_kind = $self->snapshot;
@@ -174,6 +188,11 @@ variable containing the current value for this combined option.
 Accessor allowing pragmas and command line options to share the
 variable containing the current value for this combined option.
 
+=head2 snap_layout
+
+Accessor allowing pragmas and command line options to share the
+variable containing the current value for this combined option.
+
 =head2 snapshot_dir_pragma
 
 Actually implements the C<%%snapshot_dir> pragma, stacking the 
@@ -183,6 +202,15 @@ necessary code.
 
 Sets the current snapshotting: 'on' (snapshot everything), or
 'error' (only snapshot on errors).
+
+=head2 snap_layout_pragma
+
+Sets the current snapshot format: 'vertical' (framed page,
+divided vertically), 'horizontal' (framed page, divided 
+horizontally), or 'popup' (page containing the debug
+info as an IFRAME, with a link to pop up the original page
+in a new window - good for XML, since IE and Firefox don't
+render XML properly in a subframe).
 
 =head2 snap_prefix_pragma
 

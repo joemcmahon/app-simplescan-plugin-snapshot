@@ -11,6 +11,7 @@ use Test::WWW::Simple;
 use strict;
 
 my \@accent;
+mech->agent_alias('Windows IE 6');
 mech->snapshots_to("/nonexistent");
 
 EOS
@@ -20,6 +21,7 @@ use Test::WWW::Simple;
 use strict;
 
 my \@accent;
+mech->agent_alias('Windows IE 6');
 mech->snapshots_to(".");
 
 EOS

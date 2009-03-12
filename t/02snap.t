@@ -11,6 +11,7 @@ use Test::WWW::Simple;
 use strict;
 
 my \@accent;
+mech->agent_alias('Windows IE 6');
 page_like "http://perl.org/",
           qr/Perl/,
           qq(branding [http://perl.org/] [/Perl/ should match]);
@@ -23,6 +24,7 @@ use Test::WWW::Simple;
 use strict;
 
 my \@accent;
+mech->agent_alias('Windows IE 6');
 page_like "http://perl.org/",
           qr/Perl/,
           qq(branding [http://perl.org/] [/Perl/ should match]);

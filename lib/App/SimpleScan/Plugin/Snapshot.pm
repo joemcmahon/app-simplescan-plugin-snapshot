@@ -1,6 +1,6 @@
 package App::SimpleScan::Plugin::Snapshot;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use warnings;
 use strict;
@@ -84,7 +84,7 @@ sub snap_prefix_pragma {
 sub per_test {
   my($class, $testspec) = @_;
   my $snap_kind = $testspec->app->snapshot;
-  return unless defined $snap_kind;
+  return 0,"" unless defined $snap_kind;
 
   my $comment = $testspec->comment;
   my $url = $testspec->uri;
@@ -92,12 +92,12 @@ sub per_test {
   my $test_kind = $testspec->kind;
 
   if ($snap_kind eq 'on') {
-    return <<EOS;
+    return 0, <<EOS;
 diag "See snapshot " . mech->snapshot( qq($comment<br>$url<br>$regex $test_kind) );
 EOS
   }
   elsif ($snap_kind eq 'error') {
-    return <<EOS;
+    return 0, <<EOS;
 if (!last_test->{ok}) {
   diag "See snapshot " . mech->snapshot( qq($comment<br>$url<br>$regex $test_kind) );
 }

@@ -1,5 +1,8 @@
 Revision history for App-SimpleScan-Plugin-Snapshot
 
+0.08  Tue Feb  7 15:18:58 PST 2006
+	- conform to new per_test interface
+
 0.07  Tue Dec 20 17:36:36 PST 2005
 	- Added comment tesxt from the testspec to the
 	  snapshot comment area

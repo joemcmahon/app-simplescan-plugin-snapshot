@@ -12,6 +12,7 @@ use strict;
 
 my \@accent;
 mech->snapshots_to("/tmp");
+mech->agent_alias('Windows IE 6');
 page_like "http://perl.org/",
           qr/Perl/,
           qq(branding [http://perl.org/] [/Perl/ should match]);
@@ -24,6 +25,7 @@ use strict;
 
 my \@accent;
 mech->snapshots_to("/nonexistent");
+mech->agent_alias('Windows IE 6');
 page_like "http://perl.org/",
           qr/Perl/,
           qq(branding [http://perl.org/] [/Perl/ should match]);

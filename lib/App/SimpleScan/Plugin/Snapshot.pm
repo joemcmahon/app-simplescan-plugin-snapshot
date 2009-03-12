@@ -1,6 +1,6 @@
 package App::SimpleScan::Plugin::Snapshot;
 
-our $VERSION = '1.02';
+our $VERSION = '1.03';
 
 use warnings;
 use strict;
@@ -119,7 +119,7 @@ sub filter {
     $snapshot_comment =  qq($comment<br>$url<br>$regex $test_kind);
   }
   else {
-    my $line = $self->current_line();
+    my $line = $self->last_line();
     $snapshot_comment = qq(Generated code for $line);
   }
 

@@ -1,5 +1,9 @@
 Revision history for App-SimpleScan-Plugin-Snapshot
 
+1.03  Tue Apr 25 17:14:47 PDT 2006
+	- interface mismatch: should be last_line, not
+	  current_line
+
 1.02  Mon Apr 10 10:01:24 PDT 2006
 	- failed upload; trying again
 
